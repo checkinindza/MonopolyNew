@@ -4,3 +4,16 @@
  * This is a general purpose Gradle build.
  * To learn more about Gradle by exploring our Samples at https://docs.gradle.org/8.6/samples
  */
+
+plugins {
+    java
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("com.miglayout:miglayout-swing:5.1")
+    implementation("org.json:json:20240303")
+}

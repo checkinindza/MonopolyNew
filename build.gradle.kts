@@ -7,6 +7,7 @@
 
 plugins {
     java
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 repositories {
@@ -16,4 +17,10 @@ repositories {
 dependencies {
     implementation("com.miglayout:miglayout-swing:5.1")
     implementation("org.json:json:20240303")
+}
+
+tasks.named<Jar>("jar") {
+    manifest {
+        attributes["Main-Class"] = "Main"
+    }
 }

@@ -1,13 +1,11 @@
-import org.json.*;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.LinkedList;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.json.JSONArray;
 
 // The point of DataHandler is to handle our cards list. 
 //      - Load data
@@ -26,6 +24,10 @@ public class DataHandler {
 
     // For the program to check if our data was actually loaded succesfully or was it loaded at an some point
     // So it knows not to do the loading again
+
+    public int getSize() {
+        return cardsCollection.size();
+    }
 
     public boolean isDataLoaded() {
         return dataLoaded;

@@ -1,45 +1,117 @@
+import java.awt.Image;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.LinkedList;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.table.AbstractTableModel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.json.JSONArray;
 
-// The point of DataHandler is to handle our cards list. 
+// The point of DataHandler is to handle all kinds of data in our game 
 //      - Load data
 //      - Add data if needed
 //      - Delete data if needed
+//      - And a bunch of other stuff
 
 public class DataHandler {
 
+    // https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html
+
+    class Card {
+        private final String name;
+        private final int price;
+        private final int points;
+        private final String color;
+        private final String type;
+    
+        public Card (String name, int price, int points, String color, String type) {
+            this.name = name;
+            this.price = price;
+            this.points = points;
+            this.color = color;
+            this.type = type;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public int getPrice() {
+            return this.price;
+        }
+
+        public int getPoints() {
+            return this.points;
+        }
+
+        public String getColor() {
+            return this.color;
+        }
+
+        public String getType() {
+            return this.type;
+        }
+    }
+    
+    class Player {
+        private int money;
+        private int points;
+    
+        public Player(int money, int points) {
+            this.money = money;
+            this.points = points;
+        }
+
+        public int getMoney() {
+            return this.money;
+        }
+
+        public int getPoints() {
+            return this.points;
+        }
+    }
+    
     private LinkedList<Card> cardsCollection;
+    private Deque<Player> playersDeque;
     private boolean dataLoaded;
+    private int diceValue;
+    private InputStream stream;
 
     public DataHandler() {
         this.cardsCollection = new LinkedList<>();
+        this.playersDeque = new ArrayDeque<>();
+        this.diceValue = 1;
         this.readDataFromJSON();
     }
 
     // For the program to check if our data was actually loaded succesfully or was it loaded at an some point
     // So it knows not to do the loading again
 
-    public int getSize() {
-        return cardsCollection.size();
-    }
+    /* 
+    Handling our board.json file
+     */
 
     public boolean isDataLoaded() {
         return dataLoaded;
     }
 
-    private void readDataFromJSON() {
+    public void readDataFromJSON() {
         try {
             // Read data from .json into a string
             // https://stackoverflow.com/questions/15749192/how-do-i-load-a-file-from-resource-folder
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            InputStream is = classLoader.getResourceAsStream("board.json");
-            InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+            stream = classLoader.getResourceAsStream("board.json");
+            InputStreamReader isr = new InputStreamReader(stream, StandardCharsets.UTF_8);
 
             // Move everything into a JSON object
             JSONObject jsonObject = new JSONObject(new JSONTokener(isr));
@@ -87,22 +159,109 @@ public class DataHandler {
         Card card = new Card(name, price, points, color, type);
         this.cardsCollection.add(card);
     }
-}
 
-// https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html
-
-class Card {
-    private final String name;
-    private final int price;
-    private final int points;
-    private final String color;
-    private final String type;
-
-    public Card (String name, int price, int points, String color, String type) {
-        this.name = name;
-        this.price = price;
-        this.points = points;
-        this.color = color;
-        this.type = type;
+    public int getSize() {
+        return cardsCollection.size();
     }
+
+    /* 
+    End of handling our board.json file
+     */
+
+    /*
+    Handling our .png files
+     */
+
+    public void setupJLabelIcon(String imageNameString, JLabel component) {
+        try {
+            stream = getClass().getResourceAsStream(imageNameString);
+            component.setIcon(new ImageIcon(ImageIO.read(stream)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setupJLabelIcon(String imageNameString, JLabel component, int height, int width) {
+        try {
+            stream = getClass().getResourceAsStream(imageNameString);
+            component.setIcon(new ImageIcon(new ImageIcon(ImageIO.read(stream)).getImage().getScaledInstance(height, width, Image.SCALE_DEFAULT)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /* 
+    End of Handling our .png files
+     */
+
+    /*
+    To get random or existing dice value
+      */
+
+    public int getRandomDiceValue() {
+        diceValue = (int)(Math.random() * 6) + 1;
+        return diceValue;
+    }
+
+    public int getDiceValue() {
+        return diceValue;
+    }
+
+    /*
+    Handling player info
+     */
+
+    public void setupPlayers(int money, int points, int howManyPlayers) {
+        for (int i = 0; i < howManyPlayers; i++) {
+            Player player = new Player(money, points);
+            playersDeque.addLast(player);
+        }
+    }
+
+    public Player getPlayer() {
+        return playersDeque.peekFirst();
+    }
+
+    /* 
+    Table for card manager
+     */
+
+    class CardTableModel extends AbstractTableModel {
+        String[] columnNames = { "Index", "Name", "Price", "Points", "Rarity", "Type" };
+
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        public int getRowCount() {
+            return cardsCollection.size();
+        }
+
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+
+        public Object getValueAt(int row, int col) {
+            Card card = cardsCollection.get(row);
+            if (card == null) {
+                return null;
+            }
+
+            return switch (col) {
+                case 0 -> row + 1;
+                case 1 -> card.getName();
+                case 2 -> card.getPrice();
+                case 3 -> card.getPoints();
+                case 4 -> {
+                    if (card.getColor().equals("none")) {
+                        yield null;
+                    }
+                    yield card.getColor();
+                }
+                case 5 -> card.getType();
+                default -> null;
+            };
+        }
+    }
+
 }

@@ -15,8 +15,14 @@ repositories {
 }
 
 dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("com.miglayout:miglayout-swing:5.1")
     implementation("org.json:json:20240303")
+}
+
+tasks.named("test") {
+    useJUnitPlatform()
 }
 
 tasks.named<Jar>("jar") {

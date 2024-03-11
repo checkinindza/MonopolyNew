@@ -1,3 +1,4 @@
+package org.checkinindza.GUI;
 // https://tips4java.wordpress.com/2009/11/29/text-prompt/
 
 import java.awt.*;

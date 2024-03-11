@@ -1,4 +1,7 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.checkinindza.DataHandler.DataHandler;
+import org.checkinindza.Model.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,10 +30,10 @@ class testDataHandler {
         int numberOfPlayers = 3;
 
         data.setupPlayers(initialMoney, initialPoints, numberOfPlayers);
-        Deque<DataHandler.Player> playersDeque = data.getPlayerDeque();
+        Deque<Player> playersDeque = data.getPlayerDeque();
         assertEquals(numberOfPlayers, playersDeque.size(), "Size of deque should be 3");
 
-        for (DataHandler.Player player : playersDeque) {
+        for (Player player : playersDeque) {
             assertEquals(initialMoney, player.getMoney());
             assertEquals(initialPoints, player.getPoints());
         }

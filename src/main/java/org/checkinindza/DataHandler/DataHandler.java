@@ -1,3 +1,5 @@
+package org.checkinindza.DataHandler;
+
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,16 +8,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedList;
-
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.table.AbstractTableModel;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.json.JSONArray;
+
+import org.checkinindza.Model.Player;
 
 // The point of DataHandler is to handle all kinds of data in our game 
 //      - Load data
@@ -60,24 +62,6 @@ public class DataHandler {
 
         public String getType() {
             return this.type;
-        }
-    }
-    
-    class Player {
-        private int money;
-        private int points;
-    
-        public Player(int money, int points) {
-            this.money = money;
-            this.points = points;
-        }
-
-        public int getMoney() {
-            return this.money;
-        }
-
-        public int getPoints() {
-            return this.points;
         }
     }
     
@@ -160,7 +144,7 @@ public class DataHandler {
         this.cardsCollection.add(card);
     }
 
-    public int getSize() {
+    public int getCardsCollectionSize() {
         return cardsCollection.size();
     }
 
@@ -213,9 +197,12 @@ public class DataHandler {
 
     public void setupPlayers(int money, int points, int howManyPlayers) {
         for (int i = 0; i < howManyPlayers; i++) {
-            Player player = new Player(money, points);
-            playersDeque.addLast(player);
+            playersDeque.addLast(new Player(money, points));
         }
+    }
+
+    public Deque<Player> getPlayerDeque() {
+        return playersDeque;
     }
 
     public Player getPlayer() {
@@ -226,7 +213,7 @@ public class DataHandler {
     Table for card manager
      */
 
-    class CardTableModel extends AbstractTableModel {
+    public class CardTableModel extends AbstractTableModel {
         String[] columnNames = { "Index", "Name", "Price", "Points", "Rarity", "Type" };
 
         public int getColumnCount() {

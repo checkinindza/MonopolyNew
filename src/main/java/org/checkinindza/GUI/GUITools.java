@@ -1,3 +1,5 @@
+package org.checkinindza.GUI;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -6,7 +8,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
+// import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTextField;
@@ -18,6 +20,8 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
+
+import org.checkinindza.DataHandler.DataHandler;
 
 public class GUITools {
     private static final Font labelFont = new Font("Calibri", Font.BOLD, 18);
@@ -62,13 +66,13 @@ public class GUITools {
         return textField;
     }
 
-    private JComboBox<String> createASelectionBox(String[] choiceStrings) {
+    /* private JComboBox<String> createASelectionBox(String[] choiceStrings) {
         JComboBox<String> selectionBox = new JComboBox<>(choiceStrings);
         selectionBox.setPreferredSize(componentSize);
         selectionBox.setRenderer(new BorderListCellRenderer(10, 3));
         selectionBox.setFont(comboBoxFont);
         return selectionBox;
-    }
+    } */
 
     // For JComboBox margin manipulation
 
@@ -85,7 +89,7 @@ public class GUITools {
 
         @Override
         public Component getListCellRendererComponent(JList list, Object value,
-                                                      int index, boolean isSelected, boolean cellHasFocus) {
+                                                    int index, boolean isSelected, boolean cellHasFocus) {
             JLabel renderer = (JLabel) defaultRenderer
                     .getListCellRendererComponent(list, value, index, isSelected,
                             cellHasFocus);
@@ -181,7 +185,7 @@ public class GUITools {
             try {
                 if (rangeLimit) {
                     int value = Integer.parseInt( text );
-                    return value >= 1 && value <= sizHandler.getSize();
+                    return value >= 1 && value <= sizHandler.getCardsCollectionSize();
                 } else {
                     Integer.parseInt( text );
                     return true;

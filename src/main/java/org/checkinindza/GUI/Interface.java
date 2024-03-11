@@ -1,3 +1,4 @@
+package org.checkinindza.GUI;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -22,6 +23,9 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import org.checkinindza.DataHandler.DataHandler;
+import org.checkinindza.Model.Player;
+
 import net.miginfocom.swing.MigLayout;
 
 public class Interface {
@@ -32,6 +36,7 @@ public class Interface {
 
     public Interface() {
         this.data = new DataHandler();
+        System.out.println(data.getCardsCollectionSize());
         this.initializeUI();
     }
 
@@ -272,9 +277,9 @@ public class Interface {
             }
         }
 
-        private class CardManagerAddCardWindow extends JPanel {
+/*         private class CardManagerAddCardWindow extends JPanel {
 
-        }
+        } */
 
     /////////////////////////////////////////////
     //--            Game Panel              --//
@@ -301,7 +306,7 @@ public class Interface {
 
             private JPanel setupPlayerInfoPanel() {
                 JPanel playerInfoPanel = new JPanel();
-                DataHandler.Player player = data.getPlayer();
+                Player player = data.getPlayer();
 
                 JPanel playerOnePanel = new JPanel(new MigLayout("",
                     "[][grow, fill][]",

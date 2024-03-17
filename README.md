@@ -51,9 +51,9 @@ And then you can use Graddle wrapper to run the application
 
 Honestly? Everything about this project was new to me. 
 
-- As I mentioned before, I never used Java, so that was new.
-- I never tried to create a UI, so this was also new to me.
-- Never used build automation tools like Maven/Gradle, so this was also new to me
+- As I mentioned before, I never used Java
+- I never tried to create a UI
+- Never used build automation tools like Maven/Gradle
 
 # TL:DR;
 

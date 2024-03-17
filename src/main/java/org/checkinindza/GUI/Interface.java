@@ -55,7 +55,7 @@ public class Interface {
 
     private JLabel buildLogoFromResources() {
         JLabel logoLabel = new JLabel();
-        data.setupJLabelIcon("logo.png", logoLabel);
+        data.setupJLabelIcon("/logo.png", logoLabel);
         logoLabel.setHorizontalAlignment(JLabel.CENTER);
         logoLabel.setVerticalAlignment(JLabel.CENTER);
         return logoLabel;
@@ -294,10 +294,10 @@ public class Interface {
 
             private JLabel setupDiceLogic() {
                 JLabel dice = new JLabel();
-                data.setupJLabelIcon("dice_1.png", dice, 105, 100);
+                data.setupJLabelIcon("/dice_1.png", dice, 105, 100);
                 dice.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent e) {
-                        String imageName = "dice_" + data.getRandomDiceValue() + ".png";
+                        String imageName = "/dice_" + data.getRandomDiceValue() + ".png";
                         data.setupJLabelIcon(imageName, dice, 105, 100);
                     }
                 });
@@ -313,7 +313,7 @@ public class Interface {
                     ""
                 ));
                 JLabel playerOneIcon = new JLabel();
-                data.setupJLabelIcon("player.png", playerOneIcon, 93, 93);
+                data.setupJLabelIcon("/player.png", playerOneIcon, 93, 93);
                 JLabel playerOneTitle = GUITools.createATextFieldLabel("Player one");
                 JLabel playerOneMoneyLabel = new JLabel("Money: ");
                 playerOneMoneyLabel.setFont(new Font("Calibri", Font.BOLD, 16));
@@ -331,7 +331,7 @@ public class Interface {
                 "[][grow, fill][]",
                 ""));
                 JLabel playerTwoIcon = new JLabel();
-                data.setupJLabelIcon("player.png", playerTwoIcon, 93, 93);
+                data.setupJLabelIcon("/player.png", playerTwoIcon, 93, 93);
                 JLabel playerTwoTitle = GUITools.createATextFieldLabel("Player Two");
 
                 JLabel playerTwoMoneyLabel = new JLabel("Money: ");

@@ -19,7 +19,7 @@ Swing is used to create the GUI. The org.json is used to load a few of the cards
 # Card Manager
 
 There's also a Card Manager, where a player can delete existing cards or add new ones. He can also delete all the cards and add his own. 
-The only issue is right now that the new cards are only saved in the memory while the program is running. I might try to add saving to the .json file.
+The only issue is right now that the new cards are only saved in the memory while the program is running. So if you exit the program, all your cards will be gone. I might try to add saving to the .json file.
 
 # Things to do and learn while doing this project
 

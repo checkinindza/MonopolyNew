@@ -1,17 +1,24 @@
 package org.checkinindza.DataHandler;
 
 import java.awt.Image;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import java.nio.charset.StandardCharsets;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Stack;
+
 import javax.imageio.ImageIO;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.table.AbstractTableModel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -134,6 +141,27 @@ public class DataHandler {
         this.cardsCollection.remove(positionIndex);
     }
 
+    public int deleteCardByName(String cardName) {
+        int repetitionsCount = 0;
+        Stack<Integer> indexes = new Stack<>();
+        for (int i = 0; i < this.cardsCollection.size(); i++) {
+            Card card = this.cardsCollection.get(i);
+            if (card.getName().toLowerCase().equals(cardName)) {
+                repetitionsCount++;
+                indexes.push(i + 1);
+            }
+        }
+
+        if (repetitionsCount == 0) {
+            return 0;
+        } else if (repetitionsCount == 1) {
+            this.cardsCollection.remove(indexes.peek() - 1);
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+
     /*
     Handling our .png files
      */
@@ -227,6 +255,9 @@ public class DataHandler {
                 default -> null;
             };
         }
-    }
 
+        public void updateData() {
+            fireTableDataChanged(); // Notify the table of the change
+        }
+    }
 }

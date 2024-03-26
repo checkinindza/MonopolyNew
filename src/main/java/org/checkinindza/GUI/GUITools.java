@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
+import java.awt.Color;
 
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -22,6 +23,9 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
+import javax.swing.Timer;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
 
 import org.checkinindza.DataHandler.DataHandler;
 
@@ -62,10 +66,23 @@ public class GUITools {
         System.out.println("Component was not found or either was not yet added");
     }
 
+    public static JLabel getConfirmationMessage() {
+        JLabel confirmationMessage = createATextFieldLabel("Deletion successful!");
+        confirmationMessage.setForeground(new Color(46, 204, 113));
+        return confirmationMessage;
+    }
     public static JLabel createATextFieldLabel(String labelString) {
         JLabel textFieldLabel = new JLabel(labelString);
         textFieldLabel.setFont(labelFont);
         return textFieldLabel;
+    }
+
+    public static void showComponentForAMoment(JComponent component) {
+        component.setVisible(true);
+        Timer timer = new Timer(3500, e12 -> {
+            component.setVisible(false);
+        });
+        timer.start();
     }
 
     public static JTextField createTextField(String placeHoldeString, DocumentFilter Filter) {

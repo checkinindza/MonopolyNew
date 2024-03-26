@@ -14,6 +14,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -42,9 +43,7 @@ import net.miginfocom.swing.MigLayout;
 
 public class Interface {
 
-    private JFrame guiFrame;
-    private JLabel logo;
-    private DataHandler data;
+    private final DataHandler data;
 
     public Interface() {
         this.data = new DataHandler();
@@ -52,12 +51,12 @@ public class Interface {
     }
 
     private void initializeUI() {
-        guiFrame = new JFrame();
+        JFrame guiFrame = new JFrame();
         guiFrame.setSize(1600, 1000);
         guiFrame.setTitle("Monopoly: Student Edition");
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         guiFrame.setResizable(false);
-        logo = buildLogoFromResources();
+        JLabel logo = buildLogoFromResources();
         guiFrame.add(logo, BorderLayout.NORTH);
         mainWindow mainPanel = new mainWindow();
         guiFrame.add(mainPanel);
@@ -123,12 +122,13 @@ public class Interface {
                 showCard("startPanel");
             }
         }
-
         private class cardManagerButtonAction implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CardManagerTable cardManagerTableCard = new CardManagerTable();
+                AddNewCardPanel addNewCardPanel = new AddNewCardPanel();
                 add(cardManagerTableCard, "CardManagerCard");
+                add(addNewCardPanel, "addNewCardPanel");
                 showCard("CardManagerCard");
             }
         }
@@ -242,7 +242,7 @@ public class Interface {
 
             private JPanel setupCardManagerTableWindow() {
                 JPanel controlPanel = new JPanel(new MigLayout("align 50% 50%, insets 0"));
-                JButton AddNewCardButton = GUITools.createAButton("Add New Card", null);
+                JButton AddNewCardButton = GUITools.createAButton("Add New Card", e -> showCard("addNewCardPanel"));
                 JButton backButton = GUITools.createAButton("Back", e -> showCard("mainMenuPanel"));
                 JButton loadButton = GUITools.createAButton("Load all", e ->{
                     if (data.isDataLoaded()) {
@@ -294,13 +294,13 @@ public class Interface {
                                 GUITools.removeJComponent(cardDeletion, textFieldPanel);
                             } else if (selectedOption.equals("By Position")) {
                                 GUITools.removeJComponent(cardDeletion, textFieldPanel); // This shouldn't give any issues, as the remove method already checks if the component we want to remove already exists or not.
-                                cardDeletion.add(setupDeletionByOption("selectedOption"), "cell 0 3");
+                                cardDeletion.add(setupDeletionByOption("Type in position..."), "cell 0 3");
                                 revalidate();
                                 repaint();
 
                             } else if (selectedOption.equals("By Name")) {
                                 GUITools.removeJComponent(cardDeletion, textFieldPanel); // This shouldn't give any issues, as the remove method already checks if the component we want to remove already exists or not.
-                                cardDeletion.add(setupDeletionByOption("selectedOption"), "cell 0 3");
+                                cardDeletion.add(setupDeletionByOption("Type in name..."), "cell 0 3");
                                 revalidate();
                                 repaint();
                             } else if (selectedOption.equals("All")) {
@@ -327,7 +327,13 @@ public class Interface {
             }
 
             private JPanel setupDeletionByOption(String placeHolder) {
-                textFieldPanel = new JPanel(new MigLayout("insets 0"));
+
+                textFieldPanel = new JPanel(new MigLayout("insets 0, hidemode 3"));
+
+                JLabel confirmationMessage = GUITools.getConfirmationMessage();
+                textFieldPanel.add(confirmationMessage, "cell 0 2");
+                confirmationMessage.setVisible(false);
+
                 JTextField cardDeletionField = new JTextField();
 
                 AbstractDocument doc = (AbstractDocument) cardDeletionField.getDocument();
@@ -351,23 +357,64 @@ public class Interface {
                     if (cardDeletionField.getText().isEmpty()) {
                         Toolkit.getDefaultToolkit().beep();
                         JOptionPane.showMessageDialog(null, "Field is empty", "Empty field", JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        if (placeHolder.equals("Type in position...")) {
-                            data.deleteCardByPosition((Integer.parseInt(cardDeletionField.getText()) - 1));
+                    } else if (placeHolder.equals("Type in position...")) {
+                        data.deleteCardByPosition((Integer.parseInt(cardDeletionField.getText()) - 1));
+                        cardDeletionField.setText("");
+                        revalidate();
+                        repaint();
+                        GUITools.showComponentForAMoment(confirmationMessage);
+                    } else if (placeHolder.equals("Type in name...")) {
+                        String cardName = cardDeletionField.getText().toLowerCase();
+                        int deletionResult = data.deleteCardByName(cardName);
+                        if (deletionResult == 0) {
+                            Toolkit.getDefaultToolkit().beep();
+                            JOptionPane.showMessageDialog(null, "Are you sure you typed the right name?", "Not found!", JOptionPane.ERROR_MESSAGE);
+                        } else if (deletionResult == 1) {
                             cardDeletionField.setText("");
                             revalidate();
                             repaint();
+                            GUITools.showComponentForAMoment(confirmationMessage);
                         }
                     }
                 });
+                OKButton.setPreferredSize(new Dimension(40, 40));
+                OKButton.setMargin(new Insets(0, 0, 0, 0));
 
                 JPanel textFieldWithButton = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
                 Border border = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1);
                 textFieldWithButton.setBorder(border);
                 textFieldWithButton.add(cardDeletionField);
+                textFieldWithButton.add(OKButton);
 
-                textFieldPanel.add(textFieldWithButton);
+                textFieldPanel.add(textFieldWithButton, "cell 0 1");
                 return textFieldPanel;
+            }
+        }
+
+        /////////////////////////////////////////////
+        //--         End of Card Manager         -//
+        ///////////////////////////////////////////
+
+        /////////////////////////////////////////////
+        //--         Add New Card Window        --//
+        ///////////////////////////////////////////
+
+        private class AddNewCardPanel extends JPanel {
+
+            private final int borderThickness = 3;
+
+            public AddNewCardPanel() {
+                setLayout(new MigLayout());
+            }
+
+            private JPanel createCardTemplate() {
+                JPanel cardTemplate = new JPanel(new MigLayout("width 300px, height 420px, align center",
+                        "[]",
+                        "[grow]"));
+                cardTemplate.setBackground(new Color(189, 234, 211));
+                cardTemplate.setBorder(BorderFactory.createLineBorder(Color.BLACK, borderThickness));
+
+                
             }
         }
 

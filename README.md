@@ -57,7 +57,7 @@ Honestly? Everything about this project was new to me.
 
 # TL:DR;
 
-The point of this project was to try out new things and learn more about programming while doing so. Although, there were times I wanted to give up, I'm happy that I didn't. I learned a lot while doing this project.
+The point of this project was to try out new things and learn more about programming while doing so. Although, there were times I wanted to give up, I'm happy that I didn't. I learned a lot, and stil learning, while doing this project.
 
 # Other mentions
 

@@ -62,11 +62,6 @@ public class GUITools {
         System.out.println("Component was not found or either was not yet added");
     }
 
-    public static void restartScreen(JComponent component) {
-        component.revalidate();
-        component.repaint();
-    }
-
     public static JLabel createATextFieldLabel(String labelString) {
         JLabel textFieldLabel = new JLabel(labelString);
         textFieldLabel.setFont(labelFont);
@@ -151,13 +146,13 @@ public class GUITools {
         private final int maxCharacters;
         private final boolean rangeLimit;
         private final boolean onlyNumericFilter;
-        DataHandler sizHandler;
+        DataHandler sizeHandler;
 
         public NumericAndLengthFilter(int maxCharacters, boolean rangeLimit, boolean onlyNumericFilter) {
             this.maxCharacters = maxCharacters;
             this.rangeLimit = rangeLimit;
             this.onlyNumericFilter = onlyNumericFilter;
-            this.sizHandler = new DataHandler();
+            this.sizeHandler = new DataHandler();
         }
 
         @Override
@@ -204,7 +199,7 @@ public class GUITools {
             try {
                 if (rangeLimit) {
                     int value = Integer.parseInt(text);
-                    return value >= 1 && value <= sizHandler.getCardsCollectionSize();
+                    return value >= 1 && value <= sizeHandler.getCardsCollectionSize();
                 } else {
                     Integer.parseInt(text);
                     return true;

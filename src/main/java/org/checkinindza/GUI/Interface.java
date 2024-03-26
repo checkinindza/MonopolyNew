@@ -346,6 +346,21 @@ public class Interface {
                 CompoundBorder textFieldBorder = new CompoundBorder(emptyOutside, emptyInside);
                 cardDeletionField.setBorder(textFieldBorder);
 
+                JButton OKButton = new JButton("OK");
+                OKButton.addActionListener(e -> {
+                    if (cardDeletionField.getText().isEmpty()) {
+                        Toolkit.getDefaultToolkit().beep();
+                        JOptionPane.showMessageDialog(null, "Field is empty", "Empty field", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        if (placeHolder.equals("Type in position...")) {
+                            data.deleteCardByPosition((Integer.parseInt(cardDeletionField.getText()) - 1));
+                            cardDeletionField.setText("");
+                            revalidate();
+                            repaint();
+                        }
+                    }
+                });
+
                 JPanel textFieldWithButton = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
                 Border border = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1);
                 textFieldWithButton.setBorder(border);

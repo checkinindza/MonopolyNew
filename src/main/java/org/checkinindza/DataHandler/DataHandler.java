@@ -130,6 +130,10 @@ public class DataHandler {
         }
     }
 
+    public void deleteCardByPosition(int positionIndex) { // We don't have to do any checks, because the NumericAndLength document filter won't allow the user to enter a higher number then there are cards in the list
+        this.cardsCollection.remove(positionIndex);
+    }
+
     /*
     Handling our .png files
      */

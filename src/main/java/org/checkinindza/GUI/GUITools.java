@@ -1,18 +1,13 @@
 package org.checkinindza.GUI;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-// import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
+
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.AbstractDocument;
@@ -20,6 +15,13 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JComponent;
+import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
 
 import org.checkinindza.DataHandler.DataHandler;
 
@@ -35,7 +37,7 @@ public class GUITools {
          * https://stackoverflow.com/questions/7229226/should-i-avoid-the-use-of-setpreferredmaximumminimum-size-methods-in-java-sw/7229519#7229519
          * Well in short, setXXXSize shouldn't be used. But as I'm working with limited
          * time, I'll use it
-         * So I won't waste as much time figuring out how each and every one Layout
+         * So I won't waste as much time figuring out how each Layout
          * Manager works
          */
         button.setPreferredSize(new Dimension(210, 40));
@@ -45,6 +47,24 @@ public class GUITools {
         button.setFont(comboBoxFont);
         button.setMargin(new Insets(5, 0, 0, 0));
         return button;
+    }
+
+    public static void removeJComponent(Container container, JComponent componentToDelete) {
+        Component[] components = container.getComponents();
+        for (Component component : components) {
+            if (component.equals(componentToDelete)) {
+                container.remove(componentToDelete);
+                container.revalidate();
+                container.repaint();
+                return;
+            }
+        }
+        System.out.println("Component was not found or either was not yet added");
+    }
+
+    public static void restartScreen(JComponent component) {
+        component.revalidate();
+        component.repaint();
     }
 
     public static JLabel createATextFieldLabel(String labelString) {
@@ -89,7 +109,7 @@ public class GUITools {
 
         @Override
         public Component getListCellRendererComponent(JList list, Object value,
-                                                    int index, boolean isSelected, boolean cellHasFocus) {
+                                                      int index, boolean isSelected, boolean cellHasFocus) {
             JLabel renderer = (JLabel) defaultRenderer
                     .getListCellRendererComponent(list, value, index, isSelected,
                             cellHasFocus);
@@ -153,7 +173,7 @@ public class GUITools {
                 text = "";
             }
 
-            // Build the text string assuming the replace of the text is successful
+            // Build the text string assuming the replacement of the text is successful
 
             Document doc = fb.getDocument();
             // If you want to add decimal points, otherwise not really needed
@@ -164,17 +184,16 @@ public class GUITools {
             if (validReplace(sb.toString())) {
                 if (rangeLimit) {
                     super.replace(fb, offset, length, text, attributes);
-                }
-                else if (onlyNumericFilter) {
+                } else if (onlyNumericFilter) {
                     super.replace(fb, offset, length, text, attributes);
-                }
-                else if (sb.length() <= maxCharacters) {
+                } else if (sb.length() <= maxCharacters) {
                     super.replace(fb, offset, length, text, attributes);
                 }
             } else {
                 Toolkit.getDefaultToolkit().beep();
             }
         }
+
         private boolean validReplace(String text) {
             // In case setText("") is used to clear the Document
             if (text.isEmpty()) {
@@ -184,10 +203,10 @@ public class GUITools {
             // Verify input is an Integer
             try {
                 if (rangeLimit) {
-                    int value = Integer.parseInt( text );
+                    int value = Integer.parseInt(text);
                     return value >= 1 && value <= sizHandler.getCardsCollectionSize();
                 } else {
-                    Integer.parseInt( text );
+                    Integer.parseInt(text);
                     return true;
                 }
             } catch (NumberFormatException e) {
@@ -196,3 +215,4 @@ public class GUITools {
         }
     }
 }
+

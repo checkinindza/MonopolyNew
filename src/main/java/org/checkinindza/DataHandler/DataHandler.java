@@ -18,6 +18,7 @@ import org.json.JSONTokener;
 import org.json.JSONArray;
 
 import org.checkinindza.Model.Player;
+import org.checkinindza.Model.Card;
 
 // The point of DataHandler is to handle all kinds of data in our game 
 //      - Load data
@@ -28,42 +29,6 @@ import org.checkinindza.Model.Player;
 public class DataHandler {
 
     // https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html
-
-    class Card {
-        private final String name;
-        private final int price;
-        private final int points;
-        private final String color;
-        private final String type;
-    
-        public Card (String name, int price, int points, String color, String type) {
-            this.name = name;
-            this.price = price;
-            this.points = points;
-            this.color = color;
-            this.type = type;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public int getPrice() {
-            return this.price;
-        }
-
-        public int getPoints() {
-            return this.points;
-        }
-
-        public String getColor() {
-            return this.color;
-        }
-
-        public String getType() {
-            return this.type;
-        }
-    }
     
     private LinkedList<Card> cardsCollection;
     private Deque<Player> playersDeque;
@@ -78,7 +43,7 @@ public class DataHandler {
         this.readDataFromJSON();
     }
 
-    // For the program to check if our data was actually loaded succesfully or was it loaded at an some point
+    // For the program to check if our data was actually loaded successfully or was it loaded at an some point
     // So it knows not to do the loading again
 
     /* 
@@ -111,11 +76,10 @@ public class DataHandler {
             readJSONObject(startingPoint);
             readJSONObject(jailPoint);
 
-            // So, if no execeptions were thrown, we know our data was loaded successfully, so we can change our dataLoaded flag to true
+            // So, if no exceptions were thrown, we know our data was loaded successfully, so we can change our dataLoaded flag to true
             dataLoaded = true;
         } catch (JSONException e) {
             e.printStackTrace();
-            dataLoaded = false;
         }
     }
 
@@ -144,13 +108,27 @@ public class DataHandler {
         this.cardsCollection.add(card);
     }
 
-    public int getCardsCollectionSize() {
-        return cardsCollection.size();
-    }
-
     /* 
     End of handling our board.json file
      */
+
+    /*
+    Handling our cards
+     */
+
+    public int getCardsCollectionSize() {
+        return this.cardsCollection.size();
+    }
+
+    public Boolean deleteAllCards() {
+        if (!this.cardsCollection.isEmpty()) {
+            this.cardsCollection.clear();
+            this.dataLoaded = false;
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /*
     Handling our .png files
@@ -168,7 +146,7 @@ public class DataHandler {
     public void setupJLabelIcon(String imageNameString, JLabel component, int height, int width) {
         try {
             stream = getClass().getResourceAsStream(imageNameString);
-            component.setIcon(new ImageIcon(new ImageIcon(ImageIO.read(stream)).getImage().getScaledInstance(height, width, Image.SCALE_DEFAULT)));
+            component.setIcon(new ImageIcon(new ImageIcon(ImageIO.read(stream)).getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -199,10 +177,6 @@ public class DataHandler {
         for (int i = 0; i < howManyPlayers; i++) {
             playersDeque.addLast(new Player(money, points));
         }
-    }
-
-    public Deque<Player> getPlayerDeque() {
-        return playersDeque;
     }
 
     public Player getPlayer() {

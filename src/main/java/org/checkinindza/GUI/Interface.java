@@ -1,14 +1,21 @@
 package org.checkinindza.GUI;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -23,6 +30,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.AbstractDocument;
+
 import org.checkinindza.DataHandler.DataHandler;
 import org.checkinindza.Model.Player;
 
@@ -36,7 +48,6 @@ public class Interface {
 
     public Interface() {
         this.data = new DataHandler();
-        System.out.println(data.getCardsCollectionSize());
         this.initializeUI();
     }
 
@@ -67,7 +78,7 @@ public class Interface {
 
     private class mainWindow extends JPanel {
 
-        private CardLayout cardLayout;
+        private final CardLayout cardLayout;
         private JPanel menuPanel;
 
         public mainWindow() {
@@ -217,6 +228,9 @@ public class Interface {
     ///////////////////////////////////////////
 
         private class CardManagerTable extends JPanel {
+
+            private JPanel textFieldPanel;
+
             public CardManagerTable() {
                 setLayout(new MigLayout("",
                     "[grow]",
@@ -270,16 +284,77 @@ public class Interface {
                 deleteHowComboBox.setPreferredSize(new Dimension(210, 40));
                 deleteHowComboBox.setRenderer(new GUITools.BorderListCellRenderer(10, 3));
                 deleteHowComboBox.setFont(new Font("Calibri", Font.BOLD, 17));
-                deleteHowComboBox.addItemListener(null);
+                deleteHowComboBox.addItemListener(new ItemListener() {
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        if (e.getStateChange() == ItemEvent.SELECTED) {
+                            String selectedOption = (String) deleteHowComboBox.getSelectedItem();
+                            assert selectedOption != null;
+                            if (selectedOption.equals("None")) {
+                                GUITools.removeJComponent(cardDeletion, textFieldPanel);
+                            } else if (selectedOption.equals("By Position")) {
+                                GUITools.removeJComponent(cardDeletion, textFieldPanel); // This shouldn't give any issues, as the remove method already checks if the component we want to remove already exists or not.
+                                cardDeletion.add(setupDeletionByOption("selectedOption"), "cell 0 3");
+                                revalidate();
+                                repaint();
+
+                            } else if (selectedOption.equals("By Name")) {
+                                GUITools.removeJComponent(cardDeletion, textFieldPanel); // This shouldn't give any issues, as the remove method already checks if the component we want to remove already exists or not.
+                                cardDeletion.add(setupDeletionByOption("selectedOption"), "cell 0 3");
+                                revalidate();
+                                repaint();
+                            } else if (selectedOption.equals("All")) {
+                                GUITools.removeJComponent(cardDeletion, textFieldPanel); // This shouldn't give any issues, as the remove method already checks if the component we want to remove already exists or not.
+                                int userDecisionOnFullDeletion = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete all the cards?", "Confirmation", JOptionPane.YES_NO_OPTION);
+                                if (userDecisionOnFullDeletion == 0) {
+                                    if (data.deleteAllCards()) {
+                                        Toolkit.getDefaultToolkit().beep();
+                                        JOptionPane.showMessageDialog(null, "List was deleted successfully!", "Confirmation", JOptionPane.PLAIN_MESSAGE);
+                                        revalidate();
+                                        repaint();
+                                    } else {
+                                        Toolkit.getDefaultToolkit().beep();
+                                        JOptionPane.showMessageDialog(null, "List is already empty.", "Something went wrong", JOptionPane.ERROR_MESSAGE);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
                 cardDeletion.add(titleLabel, "wrap");
                 cardDeletion.add(deleteHowComboBox);
                 return cardDeletion;           
             }
+
+            private JPanel setupDeletionByOption(String placeHolder) {
+                textFieldPanel = new JPanel(new MigLayout("insets 0"));
+                JTextField cardDeletionField = new JTextField();
+
+                AbstractDocument doc = (AbstractDocument) cardDeletionField.getDocument();
+                if (placeHolder.equals("Type in position...")) {
+                    doc.setDocumentFilter(new GUITools.NumericAndLengthFilter(0, true, true));
+                } else if (placeHolder.equals("Type in name...")) {
+                    doc.setDocumentFilter(new GUITools.InputLengthFilter(25));
+                }
+                TextPrompt tp = new TextPrompt(placeHolder, cardDeletionField, TextPrompt.Show.FOCUS_LOST);
+                tp.setFont(new Font("Calibri", Font.PLAIN, 16));
+                cardDeletionField.setFont(new Font("Calibri", Font.PLAIN, 16));
+                cardDeletionField.setPreferredSize(new Dimension(168, 40));
+
+                Border emptyOutside = BorderFactory.createEmptyBorder();
+                Border emptyInside = new EmptyBorder(4, 8, 0, 0);
+                CompoundBorder textFieldBorder = new CompoundBorder(emptyOutside, emptyInside);
+                cardDeletionField.setBorder(textFieldBorder);
+
+                JPanel textFieldWithButton = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+                Border border = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1);
+                textFieldWithButton.setBorder(border);
+                textFieldWithButton.add(cardDeletionField);
+
+                textFieldPanel.add(textFieldWithButton);
+                return textFieldPanel;
+            }
         }
-
-/*         private class CardManagerAddCardWindow extends JPanel {
-
-        } */
 
     /////////////////////////////////////////////
     //--            Game Panel              --//

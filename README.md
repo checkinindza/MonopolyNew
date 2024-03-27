@@ -14,7 +14,7 @@ This is a Monopoly: Student Edition game made with Java. The GUI was made using 
 
 # How it works?
 
-Swing is used to create the GUI. The org.json is used to load a few of the cards already premade from .json file and imported into a Linked List, which later on will be used as a Circular Linked List.
+Swing is used to create the GUI. The org.json is used to load a few of the cards already premade from .json file and imported into a Linked List, which later on will be used as a Circular Linked List. Players are stored inside a Deque, so in theory, it helps to keep track on who is going next and expand for more players, if I'll ever decide to do that.
 
 # Card Manager
 
@@ -27,6 +27,20 @@ The only issue is right now that the new cards are only saved in the memory whil
 - Learn more about object-oriented programming
 - Implement the "gameplay" part
 - Implement more test cases
+ 
+# So what was actually new to me?
+
+Honestly? Everything about this project was new to me. 
+
+- As I mentioned before, I never used Java
+- I never tried to create a UI
+- Never used build automation tools like Maven/Gradle
+
+# What I would like to change?
+
+- There is some repetitive code that I maybe would like to move into their own methods, but haven't decided what would be the best way to do it
+- I've used `setXXXSize` methods which are generally not preferred, you should let layout managers handle all the sizing of your components. But as I've had limited time, I've went the quickest route.
+- Get more familiar which layout managers like GridBagLayout and MigLayout. Because as far as I know, they're the most flexible, so I guess it would help to keep track of the code in the future.
 
 # How can you try this out?
 
@@ -46,14 +60,6 @@ And then you can use Graddle wrapper to run the application
 ```
 ./gradlew run
 ```
-
-# So what was actually new to me?
-
-Honestly? Everything about this project was new to me. 
-
-- As I mentioned before, I never used Java
-- I never tried to create a UI
-- Never used build automation tools like Maven/Gradle
 
 # TL:DR;
 

@@ -20,12 +20,11 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import javax.swing.JComboBox;
 import javax.swing.ListCellRenderer;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.Timer;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
 
 import org.checkinindza.DataHandler.DataHandler;
 
@@ -66,6 +65,10 @@ public class GUITools {
         System.out.println("Component was not found or either was not yet added");
     }
 
+    public static void setComponentVisibility(JComponent component, Boolean value) {
+        component.setVisible(value);
+    }
+
     public static JLabel getConfirmationMessage() {
         JLabel confirmationMessage = createATextFieldLabel("Deletion successful!");
         confirmationMessage.setForeground(new Color(46, 204, 113));
@@ -74,6 +77,7 @@ public class GUITools {
     public static JLabel createATextFieldLabel(String labelString) {
         JLabel textFieldLabel = new JLabel(labelString);
         textFieldLabel.setFont(labelFont);
+        textFieldLabel.setPreferredSize(textFieldLabel.getPreferredSize());
         return textFieldLabel;
     }
 
@@ -98,13 +102,13 @@ public class GUITools {
         return textField;
     }
 
-    /* private JComboBox<String> createASelectionBox(String[] choiceStrings) {
+    public static JComboBox<String> createASelectionBox(String[] choiceStrings) {
         JComboBox<String> selectionBox = new JComboBox<>(choiceStrings);
         selectionBox.setPreferredSize(componentSize);
         selectionBox.setRenderer(new BorderListCellRenderer(10, 3));
         selectionBox.setFont(comboBoxFont);
         return selectionBox;
-    } */
+    }
 
     // For JComboBox margin manipulation
 

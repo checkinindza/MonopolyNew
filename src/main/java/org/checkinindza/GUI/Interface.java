@@ -15,25 +15,14 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Insets;
+import java.util.Objects;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 
 import org.checkinindza.DataHandler.DataHandler;
@@ -208,8 +197,8 @@ public class Interface {
                     Toolkit.getDefaultToolkit().beep();
                     int getResult = JOptionPane.showConfirmDialog(null, "Are you sure about these settings?", "Confirmation", JOptionPane.YES_NO_OPTION);
                     if (getResult == JOptionPane.YES_OPTION) {
-                        Integer money = Integer.parseInt(moneyInputField.getText());
-                        Integer points = Integer.parseInt(pointsInputField.getText());
+                        int money = Integer.parseInt(moneyInputField.getText());
+                        int points = Integer.parseInt(pointsInputField.getText());
                         data.setupPlayers(money, points, Integer.parseInt(playerChoiceGroup.getSelection().getActionCommand()));
                         GameWindow gameWindow = new GameWindow();
                         addComponent(gameWindow, "gameWindow");
@@ -401,20 +390,178 @@ public class Interface {
 
         private class AddNewCardPanel extends JPanel {
 
+            private final Font cardNameFont = new Font("Calibri", Font.BOLD, 30);
+            private final Font priceLabelFont = new Font("Calibri", Font.BOLD, 27);
+            private final Font pointsLabelFont = new Font("Calibri", Font.BOLD, 25);
             private final int borderThickness = 3;
+            private JPanel cardRarityTab;
+            private JPanel cardTemplate;
+            private JPanel rarityChoicePanel;
+            private JLabel cardName;
+            private JLabel priceLabel;
+            private JLabel pointsLabel;
+            private Boolean typeChosenFlag;
 
             public AddNewCardPanel() {
-                setLayout(new MigLayout());
+                setLayout(new MigLayout("hidemode 3"));
+                this.cardTemplate = createCardTemplate();
+                add(cardTemplate, "pos 950px 120px");
+                GUITools.setComponentVisibility(cardTemplate, false);
+                add(createSelectionPanel(), "pos 350px 40px");
             }
 
             private JPanel createCardTemplate() {
-                JPanel cardTemplate = new JPanel(new MigLayout("width 300px, height 420px, align center",
+                cardTemplate = new JPanel(new MigLayout("width 300px, height 420px, align center",
                         "[]",
                         "[grow]"));
                 cardTemplate.setBackground(new Color(189, 234, 211));
+
                 cardTemplate.setBorder(BorderFactory.createLineBorder(Color.BLACK, borderThickness));
 
-                
+                cardRarityTab = new JPanel();
+                cardRarityTab.setBackground(new Color(109, 234, 211));
+                cardTemplate.add(cardRarityTab, "width 100px, height max(70px, 10%), north, wrap");
+
+                cardName = new JLabel();
+                cardName.setFont(cardNameFont);
+                cardName.setHorizontalAlignment(SwingConstants.CENTER);
+
+                priceLabel = new JLabel();
+                priceLabel.setFont(priceLabelFont);
+                priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+                pointsLabel = new JLabel();
+                pointsLabel.setFont(pointsLabelFont);
+                pointsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+                cardTemplate.add(cardName, "north, gaptop 25");
+                cardTemplate.add(pointsLabel, "dock center");
+                cardTemplate.add(priceLabel, "south, gapbottom 15");
+
+                return cardTemplate;
+            }
+
+            private JPanel createSelectionPanel() {
+                JPanel selectionPanel = new JPanel(new MigLayout("height 600px, gapy 8, aligny center, hidemode 3"));
+
+                selectionPanel.add(GUITools.createATextFieldLabel("Choose type"), "wrap");
+                String[] typeChoices = {"None", "Property", "Utility", "Tax"};
+                JComboBox<String> typeSelectionComboBox = GUITools.createASelectionBox(typeChoices);
+                selectionPanel.add(typeSelectionComboBox, "wrap");
+
+                selectionPanel.add(GUITools.createATextFieldLabel("Write a title (Max: 25 char.)"), "wrap");
+                JTextField titleInputField = GUITools.createTextField("Type in a title...", new GUITools.InputLengthFilter(25));
+                titleInputField.getDocument().addDocumentListener(new TextFieldListener(titleInputField, cardName, ""));
+                selectionPanel.add(titleInputField, "wrap");
+
+                rarityChoicePanel = new JPanel(new MigLayout("insets 0"));
+                String[] rarityChoices = {"None", "Common", "Uncommon", "Rare", "Epic", "Legendary"};
+                JComboBox<String> raritySelectionComboBox = GUITools.createASelectionBox(rarityChoices);
+                raritySelectionComboBox.addActionListener(e -> changeRarityTabColor(cardRarityTab, (String) Objects.requireNonNull(raritySelectionComboBox.getSelectedItem())));
+                rarityChoicePanel.add(GUITools.createATextFieldLabel("How rare is it?"), "wrap");
+                rarityChoicePanel.add(raritySelectionComboBox);
+                selectionPanel.add(rarityChoicePanel, "wrap");
+                GUITools.setComponentVisibility(rarityChoicePanel, false);
+
+                selectionPanel.add(GUITools.createATextFieldLabel("<html>How many points will it be worth? <br> (Only numbers allowed)</html>"), "wrap, hmax 48px");
+                JTextField pointsInputField = GUITools.createTextField("Type in points...", new GUITools.NumericAndLengthFilter(0, false, true));
+                pointsInputField.getDocument().addDocumentListener(new TextFieldListener(pointsInputField, pointsLabel, "<font size='5'>POINTS </font>"));
+                selectionPanel.add(pointsInputField, "wrap");
+
+                selectionPanel.add(GUITools.createATextFieldLabel("<html>How much will it cost? <br> (Only numbers allowed)</html>"), "wrap, hmax 48px");
+                JTextField priceInputField = GUITools.createTextField("Type in a price...", new GUITools.NumericAndLengthFilter(0, false, true));
+                priceInputField.getDocument().addDocumentListener(new TextFieldListener(priceInputField, priceLabel, "<font size='6'>PRICE $</font>"));
+                selectionPanel.add(priceInputField, "wrap");
+
+                JLabel positionTextFieldLabel = GUITools.createATextFieldLabel("<html>At what position you want to insert it?<br>(Only numbers allowed) <br> Current card count " + data.getCardsCollectionSize() + "</html>");
+                selectionPanel.add(positionTextFieldLabel, "wrap, hmax 70px");
+                JTextField positionInputField = GUITools.createTextField("Type in position...", new GUITools.NumericAndLengthFilter(0, true, false));
+                selectionPanel.add(positionInputField, "wrap");
+
+                return selectionPanel;
+            }
+
+            private void changeRarityTabColor(JComponent jComponent, String colorChoice) {
+                switch (colorChoice) {
+                    case "Legendary":
+                        jComponent.setBackground(new Color(0, 128, 255));
+                        jComponent.setBorder(BorderFactory.createMatteBorder(0, 0, borderThickness, 0, Color.black));
+                        break;
+                    case "Epic":
+                        jComponent.setBackground(new Color(231, 242, 78));
+                        jComponent.setBorder(BorderFactory.createMatteBorder(0, 0, borderThickness, 0, Color.black));
+                        break;
+                    case "Common":
+                        jComponent.setBackground(new Color(133, 79, 30));
+                        jComponent.setBorder(BorderFactory.createMatteBorder(0, 0, borderThickness, 0, Color.black));
+                        break;
+                    case "Uncommon":
+                        jComponent.setBackground(new Color(212, 35, 133));
+                        jComponent.setBorder(BorderFactory.createMatteBorder(0, 0, borderThickness, 0, Color.black));
+                        break;
+                    case "Rare":
+                        jComponent.setBackground(new Color(60, 38, 129));
+                        jComponent.setBorder(BorderFactory.createMatteBorder(0, 0, borderThickness, 0, Color.black));
+                        break;
+                    case "None":
+                        jComponent.setBackground(new Color(189, 234, 211));
+                        jComponent.setBorder(BorderFactory.createEmptyBorder());
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            private class TextFieldListener implements DocumentListener {
+
+                private final JTextField textField;
+                private final JLabel label;
+                private final String additionalInformation;
+
+                public TextFieldListener(JTextField textField, JLabel label, String additionalInformation) {
+                    this.textField = textField;
+                    this.label = label;
+                    this.additionalInformation = additionalInformation;
+                }
+
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    if (typeChosenFlag) {
+                        updateLabel();
+                    }
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    if (typeChosenFlag) {
+                        updateLabel();
+                    }
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e){
+                }
+
+                private void updateLabel() {
+                    if (label == null) {
+                        System.out.println("Label is null!");
+                        return;
+                    }
+
+                    String textFieldRetrieval = textField.getText().toUpperCase();
+                    int maxCharacters = 16;
+
+                    StringBuilder formattedText = new StringBuilder("<html><center>" + additionalInformation);
+
+                    for (int i = 0; i < textFieldRetrieval.length(); i++) {
+                        formattedText.append(textFieldRetrieval.charAt(i));
+                        if ((i + 1) % maxCharacters == 0) {
+                            formattedText.append("<br");
+                        }
+                    }
+                    formattedText.append("<center><html>");
+                    label.setText(formattedText.toString());
+                }
             }
         }
 

@@ -255,9 +255,5 @@ public class DataHandler {
                 default -> null;
             };
         }
-
-        public void updateData() {
-            fireTableDataChanged(); // Notify the table of the change
-        }
     }
 }
